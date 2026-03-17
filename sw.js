@@ -1,19 +1,7 @@
-const CACHE_NAME = 'bodylab-v2';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
-];
+const CACHE_NAME = 'bodylab-v3';
 
-// Install — cache core assets
+// Install — skip caching assets upfront, cache on fetch instead
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS);
-    })
-  );
   self.skipWaiting();
 });
 
@@ -29,30 +17,27 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch — cache first, then network
+// Fetch — network first, fallback to cache
 self.addEventListener('fetch', event => {
-  // Don't cache API calls (Claude API, etc)
-  if (event.request.url.includes('api.anthropic.com')) {
+  // Don't cache API calls
+  if (event.request.url.includes('api.anthropic.com') || 
+      event.request.url.includes('fonts.googleapis.com') ||
+      event.request.url.includes('fonts.gstatic.com')) {
     event.respondWith(fetch(event.request));
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        // Cache successful responses
-        if (response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      });
-    }).catch(() => {
-      // Offline fallback
-      if (event.request.destination === 'document') {
-        return caches.match('/index.html');
+    fetch(event.request).then(response => {
+      // Cache successful responses
+      if (response.status === 200) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
       }
+      return response;
+    }).catch(() => {
+      // Offline — try cache
+      return caches.match(event.request);
     })
   );
 });
