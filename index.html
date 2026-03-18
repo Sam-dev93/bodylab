@@ -121,6 +121,23 @@
 .wfe{background:var(--s3);border:1px solid var(--bd);border-radius:var(--rs);padding:10px;margin-bottom:5px;position:relative}.wfn{width:20px;height:20px;border-radius:50%;background:var(--ag);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--a)}.wft{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}.wdx{position:absolute;top:6px;right:6px;background:none;border:none;color:var(--t3);font-size:14px;cursor:pointer}.bae{background:var(--s3);border:1px dashed var(--bd2);border-radius:var(--rs);padding:8px;text-align:center;cursor:pointer;color:var(--t2);font-size:10px;font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:9px}
 
 .empty{text-align:center;padding:36px 20px;color:var(--t3)}.empty p{font-size:11px;line-height:1.5}
+/* Weekly tracker */
+.wk-tracker{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin-bottom:10px}
+.wk-title{font-size:10px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.wk-dots{display:flex;gap:6px;align-items:center;justify-content:center;margin-bottom:6px}
+.wk-dot{width:32px;height:32px;border-radius:50%;background:var(--s4);border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--t3)}
+.wk-dot.done{background:rgba(0,212,170,.12);border-color:var(--a);color:var(--a)}
+.wk-dot.target{border-color:var(--t3);border-style:dashed}
+.wk-sub{text-align:center;font-size:9px;color:var(--t3);font-weight:600}
+.wk-sub em{font-style:normal;color:var(--a)}
+/* Workout history log */
+.wl-card{background:var(--s3);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.wl-left{display:flex;align-items:center;gap:8px}
+.wl-check{width:20px;height:20px;border-radius:50%;background:rgba(0,212,170,.12);border:1px solid var(--a);display:flex;align-items:center;justify-content:center}
+.wl-nm{font-size:11px;font-weight:700}
+.wl-date{font-size:8px;color:var(--t3);font-weight:500;margin-top:1px}
+.wl-dur{font-size:9px;color:var(--t2);font-weight:600}
+
 .toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--a);color:#08090e;padding:7px 16px;border-radius:50px;font-size:10px;font-weight:800;z-index:500;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .cg{color:var(--green)}.cb{color:var(--red)}.cn{color:var(--t3)}
 </style>
@@ -191,10 +208,58 @@
 
 <script>
 const SK='bl2_e',SKW='bl2_w',SKS='bl2_s';
-let E=JSON.parse(localStorage.getItem(SK)||'[]'),W=JSON.parse(localStorage.getItem(SKW)||'[]'),S=JSON.parse(localStorage.getItem(SKS)||'{"height":178,"age":28,"goal":80,"gender":"male"}');
+let E=JSON.parse(localStorage.getItem(SK)||'[]'),W=JSON.parse(localStorage.getItem(SKW)||'[]'),S=JSON.parse(localStorage.getItem(SKS)||'{"height":178,"age":28,"goal":80,"gender":"male"}'),WL=JSON.parse(localStorage.getItem('bl2_wl')||'[]');
 // Migrate
 (()=>{['bodytracker_v2','bodytracker_v3','bodylab_v1','bl_e'].forEach(k=>{const d=localStorage.getItem(k);if(d&&!E.length)try{E=JSON.parse(d);sv()}catch(e){}});['bodytracker_wo_v1','bodylab_wo_v1','bl_w'].forEach(k=>{const d=localStorage.getItem(k);if(d&&!W.length)try{W=JSON.parse(d);localStorage.setItem(SKW,JSON.stringify(W))}catch(e){}})})();
+// Pre-load workouts if none exist
+if(!W.length){W=[
+{id:'w_a',name:'A — Push',rest:45,exercises:[
+{name:'Goblet Squats (15kg)',duration:45,reps:'10-12'},
+{name:'Floor Press (12.5kg each)',duration:45,reps:'10-12'},
+{name:'Overhead Press (10kg each)',duration:40,reps:'10-12'},
+{name:'Lateral Raises (5kg each)',duration:35,reps:'12-15'},
+{name:'Push-ups',duration:40,reps:'To failure'},
+{name:'Plank',duration:40,reps:'Hold'}
+]},
+{id:'w_b',name:'B — Pull',rest:45,exercises:[
+{name:'Romanian Deadlift (barbell 30kg)',duration:45,reps:'10-12'},
+{name:'Bent Over Row (barbell 25kg)',duration:45,reps:'10-12'},
+{name:'Single Arm Row (15kg)',duration:40,reps:'10 each'},
+{name:'Bicep Curls (10kg each)',duration:35,reps:'12-15'},
+{name:'Reverse Lunges (10kg each)',duration:45,reps:'8 each leg'},
+{name:'Dead Bug',duration:40,reps:'10 each side'}
+]},
+{id:'w_c',name:'C — Full Body',rest:45,exercises:[
+{name:'Sumo Squat (20kg)',duration:45,reps:'12'},
+{name:'Floor Press (15kg each)',duration:45,reps:'10'},
+{name:'Barbell Row (30kg)',duration:45,reps:'12'},
+{name:'Bulgarian Split Squat (10kg)',duration:40,reps:'8 each'},
+{name:'Hammer Curls (10kg each)',duration:35,reps:'12'},
+{name:"Farmer's Walk (15kg each)",duration:40,reps:'In place'}
+]}
+];localStorage.setItem(SKW,JSON.stringify(W))}
 
+const EX_DESC={
+'Goblet Squats (15kg)':'Hold 1 dumbbell at chest with both hands. Squat until thighs parallel. 3 sec down, 1 up.',
+'Floor Press (12.5kg each)':'Lie on floor, dumbbell in each hand. Press up. Elbows touch floor each rep.',
+'Floor Press (15kg each)':'Lie on floor, dumbbell in each hand. Press up. Elbows touch floor each rep.',
+'Standing Overhead Press (10kg each)':'Stand, dumbbells at shoulders. Press straight overhead. Keep abs tight.',
+'Overhead Press (10kg each)':'Stand, dumbbells at shoulders. Press straight overhead. Keep abs tight.',
+'Lateral Raises (5kg each)':'Stand, dumbbells at sides. Raise arms out to shoulder height. Slight elbow bend.',
+'Push-ups':'Hands wider than shoulders, body straight. Lower chest to floor, push back up.',
+'Plank':'Forearms on floor, body straight like a board. Hold. Don\'t let hips sag.',
+'Romanian Deadlift (barbell 30kg)':'Barbell mode. Stand, hinge at hips, bar slides down shins. Push bum BACK.',
+'Bent Over Row (barbell 25kg)':'Barbell mode. Hinge 45°, pull bar to belly button. Squeeze shoulder blades.',
+'Single Arm Row (15kg)':'One hand on sofa for support. Row dumbbell to hip. Don\'t twist body.',
+'Bicep Curls (10kg each)':'Stand, curl dumbbells to shoulders. Keep elbows pinned to sides. No swinging.',
+'Reverse Lunges (10kg each)':'Hold dumbbells at sides. Step one leg backwards into lunge. Front knee over ankle.',
+'Dead Bug':'Lie on back, arms up, knees 90°. Extend opposite arm+leg slowly. Lower back stays flat.',
+'Sumo Squat (20kg)':'Wide stance, toes out. Hold 1 dumbbell between legs. Squat down, torso upright.',
+'Barbell Row (30kg)':'Barbell mode. Hinge forward, pull to belly. Same as Workout B but heavier.',
+'Bulgarian Split Squat (10kg)':'Back foot on sofa. Front foot forward. Hold 1 dumbbell. Squat on front leg.',
+'Hammer Curls (10kg each)':'Like bicep curls but palms face each other (thumbs up). Hits forearms too.',
+"Farmer's Walk (15kg each)":'Hold heaviest dumbbells at sides. Walk around room. Shoulders back, stand tall.'
+};
 const TAPE=[{key:'chest',label:'Chest',color:'#3b82f6',emoji:'🔵'},{key:'waist',label:'Waist',color:'#fb923c',emoji:'🟠'},{key:'hips',label:'Hips',color:'#a78bfa',emoji:'🟣'},{key:'abdomen',label:'Abdomen',color:'#c084fc',emoji:'🟤'},{key:'armL',label:'L.Arm',color:'#22c55e',emoji:'🟢'},{key:'armR',label:'R.Arm',color:'#22c55e',emoji:'🟢'},{key:'thighL',label:'L.Thigh',color:'#facc15',emoji:'🟡'},{key:'thighR',label:'R.Thigh',color:'#facc15',emoji:'🟡'},{key:'calfL',label:'L.Calf',color:'#f43f5e',emoji:'🔴'},{key:'calfR',label:'R.Calf',color:'#f43f5e',emoji:'🔴'}];
 
 // Body SVG — proper male silhouette with measurement lines aligned
@@ -235,7 +300,7 @@ function calcWHR(w,h){return w&&h?(w/h).toFixed(2):null}
 function whrC(r){return r>.9?{l:'At Risk',c:'#f43f5e'}:{l:'Healthy',c:'#22c55e'}}
 
 // Nav
-function NAV(id,b){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.getElementById('pg-'+id).classList.add('on');document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));b.classList.add('on');if(id==='pr')rProg();if(id==='hi')rHist();if(id==='wo')rWo()}
+function NAV(id,b){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.getElementById('pg-'+id).classList.add('on');document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));b.classList.add('on');if(id==='pr')rProg();if(id==='hi')rHist();if(id==='wo'){rWo();rWoPage()}}
 function oM(id){document.getElementById(id).classList.add('open');if(id==='mEntry'){document.getElementById('iDt').value=new Date().toISOString().split('T')[0];const la=E[E.length-1];document.getElementById('iW').placeholder=la?.weight||'—';document.getElementById('iBF').placeholder=la?.bodyFat||'—';document.getElementById('iMM').placeholder=la?.muscleMass||'—';document.getElementById('iW').value='';document.getElementById('iBF').value='';document.getElementById('iMM').value='';document.getElementById('tapeMG').innerHTML=TAPE.map(t=>`<div class="mic"><div class="micl">${t.emoji} ${t.label} <span class="micu">cm</span></div><input class="mici" id="i_${t.key}" type="number" step="0.5" placeholder="${la?.[t.key]||'—'}" inputmode="decimal"></div>`).join('');document.getElementById('phWP').innerHTML='';document.getElementById('phMP').innerHTML='';document.getElementById('scanSt').style.display='none';phDW=null;phDM=null}if(id==='mSet'){document.getElementById('sH').value=S.height||'';document.getElementById('sA').value=S.age||'';document.getElementById('sG').value=S.goal||80;document.getElementById('sGn').value=S.gender||'male'}}
 function cM(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')})});
@@ -290,7 +355,8 @@ function bCh(id,data,vF,lF,col){const el=document.getElementById(id);if(!data.le
 
 // Workouts
 let wFE=[],eWI=null;
-function rWo(){const l=document.getElementById('wL');if(!W.length){l.innerHTML=`<div class="wo-empty"><p>🏋️ No workouts yet</p></div>`;return}l.innerHTML=W.map(w=>{const t=w.exercises.reduce((s,e)=>s+e.duration,0)+(w.exercises.length-1)*w.rest;return`<div class="wo-card" onclick="stW('${w.id}')"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="wo-nm">${w.name}</div><div class="wo-mt">${w.exercises.length} ex · ~${Math.ceil(t/60)} min</div></div><div class="wo-tag">▶</div></div><div class="wo-tags">${w.exercises.map(e=>`<span>${e.name}</span>`).join('')}</div><div class="wo-acts"><button onclick="event.stopPropagation();edW('${w.id}')">Edit</button><button class="dl" onclick="event.stopPropagation();dlW('${w.id}')">Del</button></div></div>`}).join('')}
+function rWo(){const l=document.getElementById('wL');if(!W.length){l.innerHTML=`<div class="wo-empty"><p>🏋️ No workouts yet</p></div>`;return}l.innerHTML=W.map(w=>{const t=(w.exercises.reduce((s,e)=>s+e.duration,0)+(w.exercises.length-1)*w.rest)*2+w.rest;return`<div class="wo-card" onclick="stW('${w.id}')"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="wo-nm">${w.name}</div><div class="wo-mt">${w.exercises.length} ex · ~${Math.ceil(t/60)} min</div></div><div class="wo-tag">▶</div></div><div class="wo-tags">${w.exercises.map(e=>`<span>${e.name}</span>`).join('')}</div><div class="wo-acts"><button onclick="event.stopPropagation();edW('${w.id}')">Edit</button><button class="dl" onclick="event.stopPropagation();dlW('${w.id}')">Del</button></div></div>`}).join('')}
+function rWoPage(){rWkTracker();rWLog()}
 function oWF(){eWI=null;document.getElementById('wfT').textContent='Create Workout';document.getElementById('wN').value='';document.getElementById('wR').value='30';wFE=[{name:'',duration:30,reps:''}];rWEL();oM('mWF')}
 function edW(id){const w=W.find(x=>x.id===id);if(!w)return;eWI=id;document.getElementById('wfT').textContent='Edit';document.getElementById('wN').value=w.name;document.getElementById('wR').value=w.rest;wFE=w.exercises.map(e=>({...e}));rWEL();oM('mWF')}
 function rWEL(){document.getElementById('wEL').innerHTML=wFE.map((x,i)=>`<div class="wfe"><button class="wdx" onclick="rmWE(${i})" ${wFE.length<=1?'style="display:none"':''}>✕</button><div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><div class="wfn">${i+1}</div><span style="font-size:9px;color:var(--t2);font-weight:700">Ex ${i+1}</span></div><input class="inp" placeholder="Name" value="${x.name}" oninput="wFE[${i}].name=this.value"><div class="wft"><div><div class="il" style="margin-top:4px">Sec</div><input class="inp" type="number" value="${x.duration}" oninput="wFE[${i}].duration=parseInt(this.value)||30" inputmode="numeric"></div><div><div class="il" style="margin-top:4px">Reps</div><input class="inp" type="text" value="${x.reps||''}" placeholder="—" oninput="wFE[${i}].reps=this.value"></div></div></div>`).join('')}
@@ -300,14 +366,42 @@ function dlW(id){if(!confirm('Delete?'))return;W=W.filter(w=>w.id!==id);localSto
 
 // Player
 let wTm=null,ws={};
-function stW(id){const w=W.find(x=>x.id===id);if(!w)return;ws={w,ei:0,ph:'work',tl:w.exercises[0].duration,tot:w.exercises.length,pa:false,dn:false};rP();oM('mWP');stTm()}
-function stTm(){clearInterval(wTm);wTm=setInterval(()=>{if(ws.pa)return;ws.tl--;if(ws.tl<=0){if(ws.ph==='work'){if(ws.ei<ws.tot-1){ws.ph='rest';ws.tl=ws.w.rest}else{ws.dn=true;clearInterval(wTm)}}else{ws.ei++;ws.ph='work';ws.tl=ws.w.exercises[ws.ei].duration}}rP()},1000)}
+function stW(id){const w=W.find(x=>x.id===id);if(!w)return;
+// Build 2-round exercise list with a round break
+const rounds=2;const allEx=[];
+for(let r=0;r<rounds;r++){w.exercises.forEach((e,i)=>{allEx.push({...e,round:r+1,idx:i+1,total:w.exercises.length})})}
+ws={w,allEx,ei:0,ph:'work',tl:allEx[0].duration,tot:allEx.length,rounds,pa:false,dn:false};rP();oM('mWP');stTm()}
+function stTm(){clearInterval(wTm);wTm=setInterval(()=>{if(ws.pa)return;ws.tl--;if(ws.tl<=0){if(ws.ph==='work'){if(ws.ei<ws.tot-1){ws.ph='rest';ws.tl=ws.w.rest}else{ws.dn=true;clearInterval(wTm)}}else{ws.ei++;ws.ph='work';ws.tl=ws.allEx[ws.ei].duration}}rP()},1000)}
 function sWo(){clearInterval(wTm);ws={}}function tP(){ws.pa=!ws.pa;rP()}
-function sEx(){if(ws.dn)return;if(ws.ph==='rest'){ws.ei++;ws.ph='work';ws.tl=ws.w.exercises[ws.ei].duration}else{if(ws.ei<ws.tot-1){ws.ph='rest';ws.tl=ws.w.rest}else{ws.dn=true;clearInterval(wTm)}}rP()}
+function sEx(){if(ws.dn)return;if(ws.ph==='rest'){ws.ei++;ws.ph='work';ws.tl=ws.allEx[ws.ei].duration}else{if(ws.ei<ws.tot-1){ws.ph='rest';ws.tl=ws.w.rest}else{ws.dn=true;clearInterval(wTm)}}rP()}
 function rP(){const p=document.getElementById('wP');if(!ws.w){p.innerHTML='';return}
-if(ws.dn){p.innerHTML=`<div style="text-align:center;padding:28px 0"><div style="font-size:44px;margin-bottom:10px">🎉</div><div style="font-size:18px;font-weight:900">Done!</div><div style="font-size:11px;color:var(--t2);margin:4px 0 16px">${ws.w.name}</div><button class="bsv" style="max-width:140px;margin:0 auto" onclick="sWo();cM('mWP')">Close</button></div>`;return}
-const ex=ws.w.exercises[ws.ei],mT=ws.ph==='work'?ex.duration:ws.w.rest,pc=ws.tl/mT,ci=2*Math.PI*82,of=ci*(1-pc),pr=((ws.ei+1)/ws.tot*100).toFixed(0),mn=Math.floor(ws.tl/60),sc=ws.tl%60;
-p.innerHTML=`<div style="font-size:14px;font-weight:900;text-align:center">${ws.w.name}</div><div style="font-size:9px;color:var(--t2);text-align:center;margin-bottom:14px">${ws.ei+1}/${ws.tot}</div><div class="trw"><svg class="tr" viewBox="0 0 184 184"><circle cx="92" cy="92" r="82" class="tr-bg"/><circle cx="92" cy="92" r="82" class="tr-fg ${ws.ph==='rest'?'rest':''}" stroke-dasharray="${ci}" stroke-dashoffset="${of}" transform="rotate(-90 92 92)"/></svg><div class="tc"><div class="tt" style="color:${ws.ph==='rest'?'var(--green)':'var(--a)'}">${mn}:${sc.toString().padStart(2,'0')}</div><div class="tla">${ws.ph==='work'?'WORK':'REST'}</div></div></div><div style="font-size:15px;font-weight:800;text-align:center">${ws.ph==='work'?ex.name:'Rest'}</div><div style="font-size:10px;color:var(--t2);text-align:center;margin-bottom:12px">${ws.ph==='work'&&ex.reps?ex.reps+' reps':''}</div><div class="woc"><button class="wob sc" onclick="sEx()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button><button class="wob p" onclick="tP()">${ws.pa?'<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"/></svg>':'<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'}</button><button class="wob sc" onclick="sWo();cM('mWP')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></button></div><div class="wpb"><div class="wpf" style="width:${pr}%"></div></div><div style="font-size:8px;color:var(--t3);text-align:center">${pr}%</div>`}
+if(ws.dn){if(!ws.logged){ws.logged=true;logWo(ws.w.name,ws.tot)}p.innerHTML=`<div style="text-align:center;padding:28px 0"><div style="font-size:44px;margin-bottom:10px">🎉</div><div style="font-size:18px;font-weight:900">Done!</div><div style="font-size:11px;color:var(--t2);margin:4px 0 16px">${ws.w.name} · 2 rounds</div><div style="font-size:10px;color:var(--a);margin-bottom:12px">✅ Auto-logged to your history</div><button class="bsv" style="max-width:140px;margin:0 auto" onclick="sWo();cM('mWP');rWo()">Close</button></div>`;return}
+const ex=ws.allEx[ws.ei],mT=ws.ph==='work'?ex.duration:ws.w.rest,pc=ws.tl/mT,ci=2*Math.PI*82,of=ci*(1-pc),pr=((ws.ei+1)/ws.tot*100).toFixed(0),mn=Math.floor(ws.tl/60),sc=ws.tl%60;
+const desc=EX_DESC[ex.name]||'';
+const roundLabel=ws.rounds>1?`Round ${ex.round}/${ws.rounds} · Ex ${ex.idx}/${ex.total}`:`${ws.ei+1}/${ws.tot}`;
+p.innerHTML=`<div style="font-size:14px;font-weight:900;text-align:center">${ws.w.name}</div><div style="font-size:9px;color:var(--t2);text-align:center;margin-bottom:14px">${roundLabel}</div><div class="trw"><svg class="tr" viewBox="0 0 184 184"><circle cx="92" cy="92" r="82" class="tr-bg"/><circle cx="92" cy="92" r="82" class="tr-fg ${ws.ph==='rest'?'rest':''}" stroke-dasharray="${ci}" stroke-dashoffset="${of}" transform="rotate(-90 92 92)"/></svg><div class="tc"><div class="tt" style="color:${ws.ph==='rest'?'var(--green)':'var(--a)'}">${mn}:${sc.toString().padStart(2,'0')}</div><div class="tla">${ws.ph==='work'?'WORK':'REST'}</div></div></div><div style="font-size:15px;font-weight:800;text-align:center">${ws.ph==='work'?ex.name:'Rest'}</div><div style="font-size:10px;color:var(--t2);text-align:center">${ws.ph==='work'&&ex.reps?ex.reps+' reps':''}</div>${ws.ph==='work'&&desc?`<div style="background:var(--s3);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin:8px 16px 0;font-size:9px;color:var(--t2);line-height:1.4;text-align:center">${desc}</div>`:''}<div style="height:8px"></div><div class="woc"><button class="wob sc" onclick="sEx()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button><button class="wob p" onclick="tP()">${ws.pa?'<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"/></svg>':'<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'}</button><button class="wob sc" onclick="sWo();cM('mWP')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></button></div><div class="wpb"><div class="wpf" style="width:${pr}%"></div></div><div style="font-size:8px;color:var(--t3);text-align:center">${pr}%</div>`}
+
+// Workout logging
+function logWo(name,exCount){const log={id:Date.now(),date:new Date().toISOString().split('T')[0],time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),name,exercises:exCount};WL.push(log);localStorage.setItem('bl2_wl',JSON.stringify(WL));toast('💪 Workout logged!')}
+
+function rWkTracker(){
+const tracker=document.getElementById('wkTracker');
+const now=new Date();const day=now.getDay()||7;// Mon=1
+const monDate=new Date(now);monDate.setDate(now.getDate()-(day-1));
+const weekStart=monDate.toISOString().split('T')[0];
+const thisWeek=WL.filter(l=>l.date>=weekStart);
+const count=thisWeek.length;const target=3;
+let dots='';
+for(let i=0;i<target;i++){
+if(i<count){dots+=`<div class="wk-dot done">✓</div>`}
+else{dots+=`<div class="wk-dot target">${i+1}</div>`}}
+tracker.innerHTML=`<div class="wk-tracker"><div class="wk-title">This Week · Target: 3 sessions</div><div class="wk-dots">${dots}</div><div class="wk-sub">${count>=target?'🎯 <em>Target hit!</em> Well done.':count>0?`<em>${count}/${target}</em> sessions done · ${target-count} to go`:'No sessions yet this week'}</div></div>`}
+
+function rWLog(){
+const log=document.getElementById('wLog');
+const recent=[...WL].sort((a,b)=>b.id-a.id).slice(0,10);
+if(!recent.length){log.innerHTML=`<div style="text-align:center;padding:16px;color:var(--t3);font-size:10px">Complete a workout to see your history</div>`;return}
+log.innerHTML=recent.map(l=>`<div class="wl-card"><div class="wl-left"><div class="wl-check"><svg width="10" height="10" fill="none" stroke="var(--a)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="wl-nm">${l.name}</div><div class="wl-date">${fD(l.date)} · ${l.time||''}</div></div></div><div class="wl-dur">${l.exercises} exercises</div></div>`).join('')}
 
 // Utils
 function delE(id){if(!confirm('Delete?'))return;E=E.filter(e=>e.id!==id);sv();rHist();rHome()}
