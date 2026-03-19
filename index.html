@@ -373,47 +373,71 @@ else{const d=parseTapeText(text);let n=0;Object.entries(d).forEach(([k,v])=>{if(
 }catch(e){console.error('OCR error:',e);st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
 
 function parseScaleText(text){
-const d={weight:null,bodyFat:null,muscleMass:null};const t=text.replace(/\n/g,' ');
-// Weight: look for "Weight" label or largest kg number
-let m=t.match(/weight[:\s]*(\d+\.?\d*)\s*kg/i);if(m)d.weight=parseFloat(m[1]);
-if(!d.weight){m=t.match(/(\d{2,3}\.\d{1,2})\s*kg/);if(m)d.weight=parseFloat(m[1])}
-// Body Fat: look for "Body Fat" or "Fat" with percentage
-m=t.match(/body\s*fat[:\s]*(\d+\.?\d*)\s*%/i);if(m)d.bodyFat=parseFloat(m[1]);
-if(!d.bodyFat){m=t.match(/fat[:\s]*(\d+\.?\d*)\s*%/i);if(m)d.bodyFat=parseFloat(m[1])}
-// Muscle Mass: look for "Muscle Mass" or "Muscle" with kg
-m=t.match(/muscle\s*mass[:\s]*(\d+\.?\d*)\s*kg/i);if(m)d.muscleMass=parseFloat(m[1]);
-if(!d.muscleMass){m=t.match(/skeletal\s*muscle[:\s]*(\d+\.?\d*)/i);if(m)d.muscleMass=parseFloat(m[1])}
-if(!d.muscleMass){m=t.match(/muscle[:\s]*(\d+\.?\d*)\s*kg/i);if(m)d.muscleMass=parseFloat(m[1])}
-// Fallback: find all numbers and try to assign by range
-if(!d.weight||!d.bodyFat){const nums=[...t.matchAll(/(\d+\.?\d+)/g)].map(x=>parseFloat(x[1])).filter(n=>n>0);const kgs=nums.filter(n=>n>40&&n<200);const pcts=nums.filter(n=>n>5&&n<50);if(!d.weight&&kgs.length)d.weight=kgs[0];if(!d.bodyFat&&pcts.length){const bf=pcts.find(n=>n>10&&n<45&&n!==d.weight);if(bf)d.bodyFat=bf}}
+const d={weight:null,bodyFat:null,muscleMass:null};
+// Arboleaf layout: label on one line, big number on next line
+// Split into lines and look for label→value pairs
+const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+console.log('Scale lines:',lines);
+
+// Strategy: scan each line for known labels, grab number from same line or next line
+for(let i=0;i<lines.length;i++){
+const line=lines[i].toLowerCase();const next=i+1<lines.length?lines[i+1]:'';
+const numInNext=next.match(/(\d+\.?\d*)/);const numInLine=line.match(/(\d+\.?\d*)/);
+
+// Weight — look for line that says just "Weight" (Arboleaf shows it as a header)
+if(line==='weight'||line.match(/^weight$/i)){
+  if(numInNext){const v=parseFloat(numInNext[1]);if(v>40&&v<200)d.weight=v}
+}
+// Body Fat — look for "Body Fat" label
+if(line.match(/body\s*fat/i)&&!line.match(/body\s*water/i)){
+  if(numInLine){const v=parseFloat(numInLine[1]);if(v>3&&v<50)d.bodyFat=v}
+  else if(numInNext){const v=parseFloat(numInNext[1]);if(v>3&&v<50)d.bodyFat=v}
+}
+// Muscle Mass — look for "Muscle Mass" (not "Skeletal Muscle" which is %)
+if(line.match(/muscle\s*mass/i)){
+  if(numInLine){const v=parseFloat(numInLine[1]);if(v>20&&v<100)d.muscleMass=v}
+  else if(numInNext){const v=parseFloat(numInNext[1]);if(v>20&&v<100)d.muscleMass=v}
+}
+}
+
+// Fallback: if weight not found, look for biggest number with "kg" that's in weight range
+if(!d.weight){const wm=text.match(/(\d{2,3}\.\d{1,2})\s*kg/g);if(wm){const nums=wm.map(s=>parseFloat(s)).filter(n=>n>40&&n<200).sort((a,b)=>b-a);if(nums.length)d.weight=nums[0]}}
 return d}
 
 function parseTapeText(text){
-const d={chest:null,waist:null,hips:null,abdomen:null,armL:null,armR:null,thighL:null,thighR:null,calfL:null,calfR:null};const t=text.replace(/\n/g,' ');
-const patterns=[
-{key:'waist',re:/waist[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'hips',re:/hip[s]?[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'abdomen',re:/abdomen[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'chest',re:/chest[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'armL',re:/left\s*arm[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'armR',re:/right\s*arm[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'thighL',re:/left\s*thigh[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'thighR',re:/right\s*thigh[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'calfL',re:/left\s*calf[:\s]*(\d+\.?\d*)\s*cm/i},
-{key:'calfR',re:/right\s*calf[:\s]*(\d+\.?\d*)\s*cm/i},
+const d={chest:null,waist:null,hips:null,abdomen:null,armL:null,armR:null,thighL:null,thighR:null,calfL:null,calfR:null};
+const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+console.log('Tape lines:',lines);
+
+// Arboleaf tape layout: label on one line, number+cm on next or same line
+const map=[
+{key:'waist',labels:['waist']},
+{key:'hips',labels:['hip','hips','full hip']},
+{key:'abdomen',labels:['abdomen']},
+{key:'chest',labels:['chest']},
+{key:'armL',labels:['left arm']},
+{key:'armR',labels:['right arm']},
+{key:'thighL',labels:['left thigh']},
+{key:'thighR',labels:['right thigh']},
+{key:'calfL',labels:['left calf']},
+{key:'calfR',labels:['right calf']},
 ];
-patterns.forEach(p=>{const m=t.match(p.re);if(m)d[p.key]=parseFloat(m[1])});
-// Also try without "cm" suffix and with number right after label
-if(!d.waist){const m=t.match(/waist[:\s]*(\d+\.?\d*)/i);if(m)d.waist=parseFloat(m[1])}
-if(!d.hips){const m=t.match(/hip[s]?[:\s]*(\d+\.?\d*)/i);if(m)d.hips=parseFloat(m[1])}
-if(!d.chest){const m=t.match(/chest[:\s]*(\d+\.?\d*)/i);if(m)d.chest=parseFloat(m[1])}
-if(!d.abdomen){const m=t.match(/abdomen[:\s]*(\d+\.?\d*)/i);if(m)d.abdomen=parseFloat(m[1])}
-if(!d.armL){const m=t.match(/left\s*arm[:\s]*(\d+\.?\d*)/i);if(m)d.armL=parseFloat(m[1])}
-if(!d.armR){const m=t.match(/right\s*arm[:\s]*(\d+\.?\d*)/i);if(m)d.armR=parseFloat(m[1])}
-if(!d.thighL){const m=t.match(/left\s*thigh[:\s]*(\d+\.?\d*)/i);if(m)d.thighL=parseFloat(m[1])}
-if(!d.thighR){const m=t.match(/right\s*thigh[:\s]*(\d+\.?\d*)/i);if(m)d.thighR=parseFloat(m[1])}
-if(!d.calfL){const m=t.match(/left\s*calf[:\s]*(\d+\.?\d*)/i);if(m)d.calfL=parseFloat(m[1])}
-if(!d.calfR){const m=t.match(/right\s*calf[:\s]*(\d+\.?\d*)/i);if(m)d.calfR=parseFloat(m[1])}
+
+for(let i=0;i<lines.length;i++){
+const line=lines[i].toLowerCase();const next=i+1<lines.length?lines[i+1]:'';
+const numInLine=line.match(/(\d+\.?\d*)\s*cm/i)||line.match(/(\d+\.?\d+)/);
+const numInNext=next.match(/(\d+\.?\d*)\s*cm/i)||next.match(/(\d+\.?\d+)/);
+
+map.forEach(m=>{
+if(d[m.key])return;// already found
+const match=m.labels.some(l=>line.includes(l));
+if(match){
+  // Try number on same line first (Arboleaf sometimes puts "Waist 99.8cm" on one line)
+  if(numInLine){const v=parseFloat(numInLine[1]);if(v>15&&v<200)d[m.key]=v}
+  // Then try next line
+  else if(numInNext){const v=parseFloat(numInNext[1]);if(v>15&&v<200)d[m.key]=v}
+}});
+}
 return d}
 
 function qLog(){const w=parseFloat(document.getElementById('qW').value);if(!w||w<20||w>300){toast('⚠️ Enter weight');return}const t=new Date().toISOString().split('T')[0];const x=E.find(e=>e.date===t);if(x)x.weight=w;else{const n={id:Date.now(),date:t,weight:w,bodyFat:null,muscleMass:null,notes:'Quick log'};TAPE.forEach(tp=>n[tp.key]=null);E.push(n)}E.sort((a,b)=>new Date(a.date)-new Date(b.date));sv();document.getElementById('qW').value='';rHome();toast('✅ Logged')}
