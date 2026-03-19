@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'bl-v13';
+const CACHE_VERSION = 'bl-v14';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
