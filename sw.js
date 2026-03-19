@@ -1,43 +1,29 @@
-const CACHE_NAME = 'bodylab-v3';
+const CACHE_VERSION = 'bl-v4';
 
-// Install — skip caching assets upfront, cache on fetch instead
-self.addEventListener('install', event => {
+self.addEventListener('install', e => {
   self.skipWaiting();
 });
 
-// Activate — clean old caches
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      );
-    })
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys => 
+      Promise.all(keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch — network first, fallback to cache
-self.addEventListener('fetch', event => {
-  // Don't cache API calls
-  if (event.request.url.includes('api.anthropic.com') || 
-      event.request.url.includes('fonts.googleapis.com') ||
-      event.request.url.includes('fonts.gstatic.com')) {
-    event.respondWith(fetch(event.request));
-    return;
-  }
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  const url = e.request.url;
+  if (url.includes('api.anthropic.com') || url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) return;
 
-  event.respondWith(
-    fetch(event.request).then(response => {
-      // Cache successful responses
-      if (response.status === 200) {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-      }
-      return response;
-    }).catch(() => {
-      // Offline — try cache
-      return caches.match(event.request);
-    })
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE_VERSION).then(c => c.put(e.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
