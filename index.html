@@ -14,7 +14,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 :root{
 --bg:#f6f6f6;--card:#fff;--card2:#f0f1f3;--card3:#e8eaed;
---accent:#1259c3;--accent-bg:rgba(18,89,195,.07);--accent-light:#dce8f8;
+--accent:#10A37F;--accent-bg:rgba(16,163,127,.07);--accent-light:#d9f2ea;
 --green:#1a8c5b;--green-bg:#e6f5ee;--red:#c62828;--red-bg:#fdeaea;
 --orange:#e67e00;--orange-bg:#fff3e0;
 --t1:#1b1b1b;--t2:#555;--t3:#999;--t4:#bbb;
@@ -33,7 +33,7 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .hdr-top{display:flex;align-items:center;justify-content:flex-end;padding-bottom:6px;gap:8px}
 .hdr-btn{width:40px;height:40px;border-radius:50%;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2)}
 .hdr-btn:active{background:var(--card2)}
-.hdr-btn.primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(18,89,195,.25)}
+.hdr-btn.primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(16,163,127,.25)}
 .hdr-btn.primary:active{opacity:.85}
 /* Big One UI page title */
 .page-title{font-size:32px;font-weight:800;letter-spacing:-.5px;padding:4px 0 14px;line-height:1.15;color:var(--t1)}
@@ -51,7 +51,7 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 @keyframes fu{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
 /* === FOCUS BLOCKS (One UI Cards) === */
-.fb{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow2)}
+.fb{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow2)}
 .fb-title{font-size:12px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
 .fb-sm{background:var(--card);border-radius:var(--rs);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
 
@@ -67,7 +67,7 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .bmi-val{font-size:32px;font-weight:900;letter-spacing:-1px}
 .bmi-label{font-size:11px;color:var(--t3);font-weight:600;margin-top:2px}
 .bmi-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;display:inline-block;margin-top:4px}
-.bmi-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#1259c3 0%,#1a8c5b 28%,#e5b800 55%,#e67e00 75%,#c62828 100%);position:relative;margin:14px 0 6px}
+.bmi-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#10A37F 0%,#1a8c5b 28%,#e5b800 55%,#e67e00 75%,#c62828 100%);position:relative;margin:14px 0 6px}
 .bmi-dot{position:absolute;top:-6px;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,.15);transform:translateX(-50%);transition:left .6s}
 .bmi-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--t4);font-weight:600}
 
@@ -83,7 +83,7 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .qlog-input:focus{border-color:var(--accent);background:#fff}
 .qlog-input::placeholder{color:var(--t4);font-weight:400;font-size:14px}
 .qlog-unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--t3);font-weight:600}
-.qlog-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:12px 20px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(18,89,195,.2)}
+.qlog-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:12px 20px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(16,163,127,.2)}
 .qlog-btn:active{transform:scale(.96)}
 
 /* Visceral Fat */
@@ -102,9 +102,9 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .alert-body{font-size:12px;color:var(--t2);line-height:1.5}
 
 /* Body Hero */
-.hero-wrap{display:flex;margin-bottom:14px;background:var(--card);border-radius:var(--r);overflow:hidden;min-height:360px;box-shadow:var(--shadow2)}
+.hero-wrap{display:flex;margin-bottom:12px;background:var(--card);border-radius:var(--r);overflow:hidden;min-height:240px;box-shadow:var(--shadow2)}
 .hero-svg{width:35%;display:flex;align-items:center;justify-content:center;padding:8px;background:linear-gradient(160deg,#eef2f9,#f5f0fa,#eef2f9)}
-.hero-metrics{width:65%;padding:14px 16px 14px 8px;display:flex;flex-direction:column;justify-content:center;gap:6px;overflow-y:auto;max-height:360px}
+.hero-metrics{width:65%;padding:12px 14px 12px 8px;display:flex;flex-direction:column;justify-content:center;gap:5px;overflow-y:auto;max-height:260px}
 .metric-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--rx);background:var(--card2);transition:background .1s}
 .metric-row:active{background:var(--accent-light)}
 .metric-left{display:flex;align-items:center;gap:7px}
@@ -150,7 +150,7 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .timer-wrap{display:flex;justify-content:center;margin:8px 0 20px;position:relative}
 .timer-svg{width:190px;height:190px}
 .timer-bg{fill:none;stroke:var(--card2);stroke-width:7}
-.timer-fg{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .25s linear;filter:drop-shadow(0 0 6px rgba(18,89,195,.15))}
+.timer-fg{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .25s linear;filter:drop-shadow(0 0 6px rgba(16,163,127,.15))}
 .timer-fg.rest{stroke:var(--green)}
 .timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
 .timer-time{font-size:40px;font-weight:900;letter-spacing:-2px;font-family:'Inter',sans-serif}
@@ -158,7 +158,7 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .ctrl-row{display:flex;justify-content:center;gap:14px;margin:16px 0}
 .ctrl-btn{width:50px;height:50px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow2)}
 .ctrl-btn:active{transform:scale(.9)}
-.ctrl-btn.play{background:var(--accent);color:#fff;width:58px;height:58px;box-shadow:0 4px 16px rgba(18,89,195,.25)}
+.ctrl-btn.play{background:var(--accent);color:#fff;width:58px;height:58px;box-shadow:0 4px 16px rgba(16,163,127,.25)}
 .ctrl-btn.sec{background:var(--card);color:var(--t2)}
 .prog-bar{background:var(--card2);border-radius:50px;height:5px;overflow:hidden;margin:12px 0 5px}
 .prog-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--accent),#2196f3)}
@@ -204,7 +204,7 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .form-cell-input::placeholder{color:var(--t4);font-weight:400;font-size:15px}
 .form-section{margin-bottom:18px}
 .form-section-title{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:16px;width:100%;font-size:16px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;margin-top:8px;box-shadow:0 4px 16px rgba(18,89,195,.18)}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:16px;width:100%;font-size:16px;font-weight:800;font-family:'Inter',sans-serif;cursor:pointer;margin-top:8px;box-shadow:0 4px 16px rgba(16,163,127,.18)}
 .btn-primary:active{transform:scale(.98);opacity:.9}
 
 /* Scan areas */
@@ -259,7 +259,6 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 <div class="bmi-track"><div class="bmi-dot" id="bMk" style="left:0%"></div></div>
 <div class="bmi-labels"><span>Under</span><span>Normal</span><span>Over (23+)</span><span>Obese (27.5+)</span></div>
 <div class="spark" id="wSp"></div>
-<div class="qlog"><div class="qlog-wrap"><input class="qlog-input" id="qW" type="number" step="0.1" placeholder="Quick log weight" inputmode="decimal"><span class="qlog-unit">kg</span></div><button class="qlog-btn" onclick="qLog()">Log</button></div>
 </div>
 <div id="vfCard" class="fb"><div class="fb-title">Visceral Fat Indicators</div><div class="vf-grid" id="vfR"><div class="vf-item"><div class="vf-val" style="color:var(--t4)">—</div><div class="vf-label">VAT cm² (LIH)</div><div class="vf-badge" style="background:var(--card2);color:var(--t4)">Add waist + thigh</div></div><div class="vf-item"><div class="vf-val" style="color:var(--t4)">—</div><div class="vf-label">Waist:Height</div><div class="vf-badge" style="background:var(--card2);color:var(--t4)">No data</div></div><div class="vf-item"><div class="vf-val" style="color:var(--t4)">—</div><div class="vf-label">Waist:Hip</div><div class="vf-badge" style="background:var(--card2);color:var(--t4)">No data</div></div></div></div>
 </div>
@@ -351,18 +350,18 @@ let E=JSON.parse(localStorage.getItem(SK)||'[]'),W=JSON.parse(localStorage.getIt
 (()=>{['bodytracker_v2','bodytracker_v3','bodylab_v1','bl_e'].forEach(k=>{const d=localStorage.getItem(k);if(d&&!E.length)try{E=JSON.parse(d);sv()}catch(e){}});['bodytracker_wo_v1','bodylab_wo_v1','bl_w'].forEach(k=>{const d=localStorage.getItem(k);if(d&&!W.length)try{W=JSON.parse(d);localStorage.setItem(SKW,JSON.stringify(W))}catch(e){}})})();
 if(!W.length){W=[{id:'w_a',name:'A — Push',rest:45,exercises:[{name:'Goblet Squats (15kg)',duration:45,reps:'10-12'},{name:'Floor Press (12.5kg each)',duration:45,reps:'10-12'},{name:'Overhead Press (10kg each)',duration:40,reps:'10-12'},{name:'Lateral Raises (5kg each)',duration:35,reps:'12-15'},{name:'Push-ups',duration:40,reps:'To failure'},{name:'Plank',duration:40,reps:'Hold'}]},{id:'w_b',name:'B — Pull',rest:45,exercises:[{name:'Romanian Deadlift (barbell 30kg)',duration:45,reps:'10-12'},{name:'Bent Over Row (barbell 25kg)',duration:45,reps:'10-12'},{name:'Single Arm Row (15kg)',duration:40,reps:'10 each'},{name:'Bicep Curls (10kg each)',duration:35,reps:'12-15'},{name:'Reverse Lunges (10kg each)',duration:45,reps:'8 each leg'},{name:'Dead Bug',duration:40,reps:'10 each side'}]},{id:'w_c',name:'C — Full Body',rest:45,exercises:[{name:'Sumo Squat (20kg)',duration:45,reps:'12'},{name:'Floor Press (15kg each)',duration:45,reps:'10'},{name:'Barbell Row (30kg)',duration:45,reps:'12'},{name:'Bulgarian Split Squat (10kg)',duration:40,reps:'8 each'},{name:'Hammer Curls (10kg each)',duration:35,reps:'12'},{name:"Farmer's Walk (15kg each)",duration:40,reps:'In place'}]}];localStorage.setItem(SKW,JSON.stringify(W))}
 const EX_DESC={'Goblet Squats (15kg)':'Hold 1 dumbbell at chest with both hands. Squat until thighs parallel. 3 sec down, 1 up.','Floor Press (12.5kg each)':'Lie on floor, dumbbell in each hand. Press up. Elbows touch floor each rep.','Floor Press (15kg each)':'Lie on floor, dumbbell in each hand. Press up. Elbows touch floor each rep.','Overhead Press (10kg each)':'Stand, dumbbells at shoulders. Press straight overhead. Keep abs tight.','Lateral Raises (5kg each)':'Stand, dumbbells at sides. Raise arms out to shoulder height. Slight elbow bend.','Push-ups':'Hands wider than shoulders, body straight. Lower chest to floor, push back up.','Plank':'Forearms on floor, body straight like a board. Hold. Don\'t let hips sag.','Romanian Deadlift (barbell 30kg)':'Barbell mode. Stand, hinge at hips, bar slides down shins. Push bum BACK.','Bent Over Row (barbell 25kg)':'Barbell mode. Hinge 45°, pull bar to belly button. Squeeze shoulder blades.','Single Arm Row (15kg)':'One hand on sofa for support. Row dumbbell to hip. Don\'t twist body.','Bicep Curls (10kg each)':'Stand, curl dumbbells to shoulders. Keep elbows pinned to sides. No swinging.','Reverse Lunges (10kg each)':'Hold dumbbells at sides. Step one leg backwards into lunge. Front knee over ankle.','Dead Bug':'Lie on back, arms up, knees 90°. Extend opposite arm+leg slowly. Lower back stays flat.','Sumo Squat (20kg)':'Wide stance, toes out. Hold 1 dumbbell between legs. Squat down, torso upright.','Barbell Row (30kg)':'Barbell mode. Hinge forward, pull to belly. Same as Workout B but heavier.','Bulgarian Split Squat (10kg)':'Back foot on sofa. Front foot forward. Hold 1 dumbbell. Squat on front leg.','Hammer Curls (10kg each)':'Like bicep curls but palms face each other (thumbs up). Hits forearms too.',"Farmer's Walk (15kg each)":'Hold heaviest dumbbells at sides. Walk around room. Shoulders back, stand tall.'};
-const TAPE=[{key:'chest',label:'Chest',color:'#1259c3',emoji:'🔵'},{key:'waist',label:'Waist',color:'#e67e00',emoji:'🟠'},{key:'hips',label:'Hips',color:'#7c4dff',emoji:'🟣'},{key:'abdomen',label:'Abdomen',color:'#c57600',emoji:'🟤'},{key:'armL',label:'L.Arm',color:'#1a8c5b',emoji:'🟢'},{key:'armR',label:'R.Arm',color:'#1a8c5b',emoji:'🟢'},{key:'thighL',label:'L.Thigh',color:'#e5b800',emoji:'🟡'},{key:'thighR',label:'R.Thigh',color:'#e5b800',emoji:'🟡'},{key:'calfL',label:'L.Calf',color:'#c62828',emoji:'🔴'},{key:'calfR',label:'R.Calf',color:'#c62828',emoji:'🔴'}];
+const TAPE=[{key:'chest',label:'Chest',color:'#10A37F',emoji:'🔵'},{key:'waist',label:'Waist',color:'#e67e00',emoji:'🟠'},{key:'hips',label:'Hips',color:'#7c4dff',emoji:'🟣'},{key:'abdomen',label:'Abdomen',color:'#c57600',emoji:'🟤'},{key:'armL',label:'L.Arm',color:'#1a8c5b',emoji:'🟢'},{key:'armR',label:'R.Arm',color:'#1a8c5b',emoji:'🟢'},{key:'thighL',label:'L.Thigh',color:'#e5b800',emoji:'🟡'},{key:'thighR',label:'R.Thigh',color:'#e5b800',emoji:'🟡'},{key:'calfL',label:'L.Calf',color:'#c62828',emoji:'🔴'},{key:'calfR',label:'R.Calf',color:'#c62828',emoji:'🔴'}];
 const pageTitles={home:'Body<em>Lab</em>',wo:'Workouts',hi:'History',pr:'Progress'};
 const pageSubs={home:'',wo:'Tap to start · Auto-logs on completion',hi:'All check-ins',pr:'Track your journey'};
 
-function bodySVG(d){const M=[{k:'waist',y:152,w:62,c:'#e67e00'},{k:'hips',y:188,w:70,c:'#7c4dff'},{k:'thighL',y:248,w:30,c:'#e5b800'}];const lines=M.filter(m=>d&&d[m.k]).map(m=>`<line x1="${105-m.w}" y1="${m.y}" x2="${105+m.w}" y2="${m.y}" stroke="${m.c}" stroke-width="1.8" opacity=".5" stroke-dasharray="4,3"/>`).join('');return`<svg viewBox="0 0 210 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;max-height:350px"><defs><linearGradient id="sk" x1=".3" y1="0" x2=".7" y2="1"><stop offset="0%" stop-color="rgba(80,100,140,.1)"/><stop offset="100%" stop-color="rgba(80,100,140,.04)"/></linearGradient><linearGradient id="ss" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(80,100,140,.22)"/><stop offset="100%" stop-color="rgba(80,100,140,.06)"/></linearGradient></defs><ellipse cx="105" cy="32" rx="20" ry="24" fill="url(#sk)" stroke="url(#ss)" stroke-width="1.2"/><path d="M86 18Q95 6 105 4Q115 6 124 18" fill="none" stroke="url(#ss)" stroke-width="1" opacity=".5"/><path d="M95 54L95 66L115 66L115 54" fill="url(#sk)" stroke="url(#ss)" stroke-width="1"/><path d="M95 66Q75 66 60 76Q48 86 44 100" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M115 66Q135 66 150 76Q162 86 166 100" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M72 78Q66 100 66 120Q66 140 69 155Q73 175 80 190L95 196Q100 198 105 198Q110 198 115 196L130 190Q137 175 141 155Q144 140 144 120Q144 100 138 78" fill="url(#sk)" stroke="url(#ss)" stroke-width="1"/><path d="M44 100Q38 120 36 142Q34 165 38 185Q42 198 50 202" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M166 100Q172 120 174 142Q176 165 172 185Q168 198 160 202" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="50" cy="207" rx="6" ry="8" fill="url(#sk)" stroke="url(#ss)" stroke-width=".8"/><ellipse cx="160" cy="207" rx="6" ry="8" fill="url(#sk)" stroke="url(#ss)" stroke-width=".8"/><path d="M80 190Q78 205 76 215L86 228L105 232L124 228L134 215Q132 205 130 190" fill="url(#sk)" stroke="url(#ss)" stroke-width="1"/><path d="M80 208Q92 218 105 220Q118 218 130 208" fill="none" stroke="rgba(80,100,140,.12)" stroke-width="1"/><path d="M86 228Q80 258 78 290Q76 320 78 348Q80 365 86 378" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M105 232Q100 240 96 255Q90 275 88 300Q86 325 88 348Q90 365 92 375" fill="none" stroke="url(#ss)" stroke-width=".8" opacity=".3"/><path d="M124 228Q130 258 132 290Q134 320 132 348Q130 365 124 378" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M105 232Q110 240 114 255Q120 275 122 300Q124 325 122 348Q120 365 118 375" fill="none" stroke="url(#ss)" stroke-width=".8" opacity=".3"/><ellipse cx="88" cy="388" rx="11" ry="5" fill="url(#sk)" stroke="url(#ss)" stroke-width=".7"/><ellipse cx="122" cy="388" rx="11" ry="5" fill="url(#sk)" stroke="url(#ss)" stroke-width=".7"/>${lines}</svg>`}
+function bodySVG(d){const M=[{k:'waist',y:152,w:62,c:'#e67e00'},{k:'hips',y:188,w:70,c:'#7c4dff'},{k:'thighL',y:248,w:30,c:'#e5b800'}];const lines=M.filter(m=>d&&d[m.k]).map(m=>`<line x1="${105-m.w}" y1="${m.y}" x2="${105+m.w}" y2="${m.y}" stroke="${m.c}" stroke-width="1.8" opacity=".5" stroke-dasharray="4,3"/>`).join('');return`<svg viewBox="0 0 210 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;max-height:230px"><defs><linearGradient id="sk" x1=".3" y1="0" x2=".7" y2="1"><stop offset="0%" stop-color="rgba(80,100,140,.1)"/><stop offset="100%" stop-color="rgba(80,100,140,.04)"/></linearGradient><linearGradient id="ss" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(80,100,140,.22)"/><stop offset="100%" stop-color="rgba(80,100,140,.06)"/></linearGradient></defs><ellipse cx="105" cy="32" rx="20" ry="24" fill="url(#sk)" stroke="url(#ss)" stroke-width="1.2"/><path d="M86 18Q95 6 105 4Q115 6 124 18" fill="none" stroke="url(#ss)" stroke-width="1" opacity=".5"/><path d="M95 54L95 66L115 66L115 54" fill="url(#sk)" stroke="url(#ss)" stroke-width="1"/><path d="M95 66Q75 66 60 76Q48 86 44 100" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M115 66Q135 66 150 76Q162 86 166 100" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M72 78Q66 100 66 120Q66 140 69 155Q73 175 80 190L95 196Q100 198 105 198Q110 198 115 196L130 190Q137 175 141 155Q144 140 144 120Q144 100 138 78" fill="url(#sk)" stroke="url(#ss)" stroke-width="1"/><path d="M44 100Q38 120 36 142Q34 165 38 185Q42 198 50 202" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M166 100Q172 120 174 142Q176 165 172 185Q168 198 160 202" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="50" cy="207" rx="6" ry="8" fill="url(#sk)" stroke="url(#ss)" stroke-width=".8"/><ellipse cx="160" cy="207" rx="6" ry="8" fill="url(#sk)" stroke="url(#ss)" stroke-width=".8"/><path d="M80 190Q78 205 76 215L86 228L105 232L124 228L134 215Q132 205 130 190" fill="url(#sk)" stroke="url(#ss)" stroke-width="1"/><path d="M80 208Q92 218 105 220Q118 218 130 208" fill="none" stroke="rgba(80,100,140,.12)" stroke-width="1"/><path d="M86 228Q80 258 78 290Q76 320 78 348Q80 365 86 378" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M105 232Q100 240 96 255Q90 275 88 300Q86 325 88 348Q90 365 92 375" fill="none" stroke="url(#ss)" stroke-width=".8" opacity=".3"/><path d="M124 228Q130 258 132 290Q134 320 132 348Q130 365 124 378" fill="none" stroke="url(#ss)" stroke-width="1.5" stroke-linecap="round"/><path d="M105 232Q110 240 114 255Q120 275 122 300Q124 325 122 348Q120 365 118 375" fill="none" stroke="url(#ss)" stroke-width=".8" opacity=".3"/><ellipse cx="88" cy="388" rx="11" ry="5" fill="url(#sk)" stroke="url(#ss)" stroke-width=".7"/><ellipse cx="122" cy="388" rx="11" ry="5" fill="url(#sk)" stroke="url(#ss)" stroke-width=".7"/>${lines}</svg>`}
 
 function getAge(){if(!S.dob)return S.age||33;const b=new Date(S.dob),t=new Date();let a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;return a}
 function calcBMI(w){if(!w||!S.height)return null;return(w/((S.height/100)**2)).toFixed(1)}
-function bmiC(b){if(b<18.5)return{l:'Underweight',c:'#1259c3'};if(b<23)return{l:'Normal',c:'#1a8c5b'};if(b<27.5)return{l:'Overweight',c:'#e67e00'};return{l:'Obese',c:'#c62828'}}
+function bmiC(b){if(b<18.5)return{l:'Underweight',c:'#10A37F'};if(b<23)return{l:'Normal',c:'#1a8c5b'};if(b<27.5)return{l:'Overweight',c:'#e67e00'};return{l:'Obese',c:'#c62828'}}
 function bmiP(b){return Math.min(100,Math.max(0,((b-14)/22)*100))}
 function calcWHtR(w){return w&&S.height?(w/S.height).toFixed(3):null}
-function whtC(r){if(r<.43)return{l:'Low',c:'#1259c3'};if(r<.53)return{l:'Healthy',c:'#1a8c5b'};if(r<.58)return{l:'Elevated',c:'#e67e00'};return{l:'High',c:'#c62828'}}
+function whtC(r){if(r<.43)return{l:'Low',c:'#10A37F'};if(r<.53)return{l:'Healthy',c:'#1a8c5b'};if(r<.58)return{l:'Elevated',c:'#e67e00'};return{l:'High',c:'#c62828'}}
 function calcWHR(w,h){return w&&h?(w/h).toFixed(2):null}
 function whrC(r){return r>.9?{l:'At Risk',c:'#c62828'}:{l:'Healthy',c:'#1a8c5b'}}
 // Samouda et al. 2013 — VAT prediction from anthropometrics
@@ -510,7 +509,7 @@ const al=document.getElementById('muscleAlert');al.className='alert-box';if(s.le
 function rHist(){const h=document.getElementById('hL');const s=[...E].sort((a,b)=>new Date(b.date)-new Date(a.date));if(!s.length){h.innerHTML=`<div class="empty-state"><p>No check-ins yet.<br>Tap + to add your first.</p></div>`;return}h.innerHTML=s.map(e=>{const ms=TAPE.filter(t=>e[t.key]).map(t=>`<div class="hist-m"><div class="hist-mv" style="color:${t.color}">${e[t.key]}</div><div class="hist-ml">${t.label}</div></div>`).join('');const ph=(e.photoW||e.photoM)?`<div class="hist-photos">${e.photoW?`<img src="${e.photoW}" onclick="window.open(this.src)">`:''}${e.photoM?`<img src="${e.photoM}" onclick="window.open(this.src)">`:''}</div>`:'';return`<div class="hist-card"><div class="hist-top"><div><div class="hist-date">${fD(e.date)}</div>${e.notes?`<div class="hist-note">${e.notes}</div>`:''}</div><div class="hist-weight">${e.weight||'—'}<span> kg</span></div></div>${ms?`<div class="hist-grid">${ms}</div>`:''}${e.bodyFat||e.muscleMass?`<div class="hist-grid" style="margin-top:5px">${e.bodyFat?`<div class="hist-m"><div class="hist-mv" style="color:#e67e00">${e.bodyFat}%</div><div class="hist-ml">Body Fat</div></div>`:''}${e.muscleMass?`<div class="hist-m"><div class="hist-mv" style="color:#1a8c5b">${e.muscleMass}kg</div><div class="hist-ml">Muscle</div></div>`:''}</div>`:''}${ph}<button class="hist-del" onclick="delE(${e.id})">Delete</button></div>`}).join('')}
 
 function rProg(){const G=S.goal||80;document.getElementById('gT').textContent=G;document.getElementById('gG').textContent=G+' kg';document.getElementById('gGL').textContent=G+' kg';const s=[...E].filter(e=>e.weight).sort((a,b)=>new Date(a.date)-new Date(b.date));if(!s.length)return;const f=s[0],la=s[s.length-1],lo=(f.weight-la.weight).toFixed(1),tot=f.weight-G,p=tot>0?Math.min(100,Math.max(0,((f.weight-la.weight)/tot)*100)).toFixed(0):0;document.getElementById('gS').textContent=f.weight+' kg';document.getElementById('gL').textContent=lo+' kg';document.getElementById('gF').style.width=p+'%';document.getElementById('gSL').textContent=f.weight;document.getElementById('gPL').textContent=p+'%';
-lineCh('cW',s,e=>e.weight,e=>fS(e.date),'#1259c3','kg',G);
+lineCh('cW',s,e=>e.weight,e=>fS(e.date),'#10A37F','kg',G);
 lineCh('cBF',[...E].filter(e=>e.bodyFat).sort((a,b)=>new Date(a.date)-new Date(b.date)),e=>e.bodyFat,e=>fS(e.date),'#e67e00','%');
 lineCh('cMM',[...E].filter(e=>e.muscleMass).sort((a,b)=>new Date(a.date)-new Date(b.date)),e=>e.muscleMass,e=>fS(e.date),'#1a8c5b','kg');
 lineCh('cWa',[...E].filter(e=>e.waist).sort((a,b)=>new Date(a.date)-new Date(b.date)),e=>e.waist,e=>fS(e.date),'#e67e00','cm');
