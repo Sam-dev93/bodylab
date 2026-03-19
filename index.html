@@ -9,6 +9,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>BodyLab</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 :root{
@@ -361,8 +362,59 @@ document.querySelectorAll('.modal').forEach(m=>{m.addEventListener('click',e=>{i
 function saveSe(){S.height=parseInt(document.getElementById('sH').value)||0;S.age=parseInt(document.getElementById('sA').value)||0;S.goal=parseFloat(document.getElementById('sG').value)||80;S.gender=document.getElementById('sGn').value;localStorage.setItem(SKS,JSON.stringify(S));cM('mSet');rHome();toast('✅ Saved')}
 
 let phDW=null,phDM=null;
-function onPh(inp,type){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const b=e.target.result;if(type==='W')phDW=b;else phDM=b;document.getElementById('ph'+type+'P').innerHTML=`<img src="${b}" style="width:100%;max-height:100px;object-fit:cover;border-radius:10px;margin-top:8px">`;scanPh(b,type)};r.readAsDataURL(f)}
-async function scanPh(b64,type){const st=document.getElementById('scanSt');st.style.display='block';st.style.background='var(--accent-bg)';st.style.color='var(--accent)';st.textContent=type==='W'?'🔍 Reading scale...':'🔍 Reading measurements...';const mt=b64.startsWith('data:image/png')?'image/png':'image/jpeg';const raw=b64.split(',')[1];const prompt=type==='W'?'This is a screenshot from a smart body scale app (likely Arboleaf). Extract these exact values as numbers. Look for labels like "Weight", "Body Fat", "Muscle Mass", "BMI", "Visceral Fat", "BMR". The weight will be in kg (largest number, usually 60-120). Body Fat is a percentage (usually 10-40%). Muscle Mass is in kg. Return ONLY this JSON with no markdown: {"weight":number|null,"bodyFat":number|null,"muscleMass":number|null,"bmi":number|null,"visceralFat":number|null,"bmr":number|null}':'This is a screenshot from a smart tape measure app (likely Arboleaf). Extract ALL body circumference measurements in cm. Look for labels like Waist, Hip, Abdomen, Chest, Left arm, Right arm, Left thigh, Right thigh, Left calf, Right calf, Neck, Shoulder. Map: "Hip"/"Full hip"→hips, "Left arm"→armL, "Right arm"→armR, "Left thigh"→thighL, "Right thigh"→thighR, "Left calf"→calfL, "Right calf"→calfR. Return ONLY JSON no markdown: {"chest":number|null,"waist":number|null,"hips":number|null,"abdomen":number|null,"armL":number|null,"armR":number|null,"thighL":number|null,"thighR":number|null,"calfL":number|null,"calfR":number|null}';try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:mt,data:raw}},{type:"text",text:prompt}]}]})});const d=await r.json();const txt=d.content?.map(c=>c.text||'').join('')||'';const clean=txt.replace(/```json|```/g,'').trim();const p=JSON.parse(clean);if(type==='W'){if(p.weight)document.getElementById('iW').value=p.weight;if(p.bodyFat)document.getElementById('iBF').value=p.bodyFat;if(p.muscleMass)document.getElementById('iMM').value=p.muscleMass;st.textContent=`✅ ${p.weight?p.weight+'kg':'—'} | Fat ${p.bodyFat?p.bodyFat+'%':'—'} | Muscle ${p.muscleMass?p.muscleMass+'kg':'—'}`}else{let n=0;Object.entries(p).forEach(([k,v])=>{if(v){const el=document.getElementById('i_'+k);if(el){el.value=v;n++}}});st.textContent=`✅ Filled ${n} measurements`}st.style.background='var(--green-bg)';st.style.color='var(--green)'}catch(e){console.error(e);st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
+function onPh(inp,type){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const b=e.target.result;if(type==='W')phDW=b;else phDM=b;document.getElementById('ph'+type+'P').innerHTML=`<img src="${b}" style="width:100%;max-height:100px;object-fit:cover;border-radius:10px;margin-top:8px">`;scanPh(f,type)};r.readAsDataURL(f)}
+async function scanPh(file,type){
+const st=document.getElementById('scanSt');st.style.display='block';st.style.background='var(--accent-bg)';st.style.color='var(--accent)';st.textContent=type==='W'?'🔍 Reading scale... (may take a few seconds)':'🔍 Reading measurements... (may take a few seconds)';
+try{
+const result=await Tesseract.recognize(file,'eng',{logger:m=>{if(m.status==='recognizing text'){const pct=Math.round(m.progress*100);st.textContent=type==='W'?`🔍 Reading scale... ${pct}%`:`🔍 Reading measurements... ${pct}%`}}});
+const text=result.data.text;console.log('OCR text:',text);
+if(type==='W'){const d=parseScaleText(text);let filled=0;if(d.weight){document.getElementById('iW').value=d.weight;filled++}if(d.bodyFat){document.getElementById('iBF').value=d.bodyFat;filled++}if(d.muscleMass){document.getElementById('iMM').value=d.muscleMass;filled++}if(filled>0){st.textContent=`✅ ${d.weight?d.weight+'kg':'—'} | Fat ${d.bodyFat?d.bodyFat+'%':'—'} | Muscle ${d.muscleMass?d.muscleMass+'kg':'—'}`;st.style.background='var(--green-bg)';st.style.color='var(--green)'}else{st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
+else{const d=parseTapeText(text);let n=0;Object.entries(d).forEach(([k,v])=>{if(v){const el=document.getElementById('i_'+k);if(el){el.value=v;n++}}});if(n>0){st.textContent=`✅ Filled ${n} measurements`;st.style.background='var(--green-bg)';st.style.color='var(--green)'}else{st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
+}catch(e){console.error('OCR error:',e);st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
+
+function parseScaleText(text){
+const d={weight:null,bodyFat:null,muscleMass:null};const t=text.replace(/\n/g,' ');
+// Weight: look for "Weight" label or largest kg number
+let m=t.match(/weight[:\s]*(\d+\.?\d*)\s*kg/i);if(m)d.weight=parseFloat(m[1]);
+if(!d.weight){m=t.match(/(\d{2,3}\.\d{1,2})\s*kg/);if(m)d.weight=parseFloat(m[1])}
+// Body Fat: look for "Body Fat" or "Fat" with percentage
+m=t.match(/body\s*fat[:\s]*(\d+\.?\d*)\s*%/i);if(m)d.bodyFat=parseFloat(m[1]);
+if(!d.bodyFat){m=t.match(/fat[:\s]*(\d+\.?\d*)\s*%/i);if(m)d.bodyFat=parseFloat(m[1])}
+// Muscle Mass: look for "Muscle Mass" or "Muscle" with kg
+m=t.match(/muscle\s*mass[:\s]*(\d+\.?\d*)\s*kg/i);if(m)d.muscleMass=parseFloat(m[1]);
+if(!d.muscleMass){m=t.match(/skeletal\s*muscle[:\s]*(\d+\.?\d*)/i);if(m)d.muscleMass=parseFloat(m[1])}
+if(!d.muscleMass){m=t.match(/muscle[:\s]*(\d+\.?\d*)\s*kg/i);if(m)d.muscleMass=parseFloat(m[1])}
+// Fallback: find all numbers and try to assign by range
+if(!d.weight||!d.bodyFat){const nums=[...t.matchAll(/(\d+\.?\d+)/g)].map(x=>parseFloat(x[1])).filter(n=>n>0);const kgs=nums.filter(n=>n>40&&n<200);const pcts=nums.filter(n=>n>5&&n<50);if(!d.weight&&kgs.length)d.weight=kgs[0];if(!d.bodyFat&&pcts.length){const bf=pcts.find(n=>n>10&&n<45&&n!==d.weight);if(bf)d.bodyFat=bf}}
+return d}
+
+function parseTapeText(text){
+const d={chest:null,waist:null,hips:null,abdomen:null,armL:null,armR:null,thighL:null,thighR:null,calfL:null,calfR:null};const t=text.replace(/\n/g,' ');
+const patterns=[
+{key:'waist',re:/waist[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'hips',re:/hip[s]?[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'abdomen',re:/abdomen[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'chest',re:/chest[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'armL',re:/left\s*arm[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'armR',re:/right\s*arm[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'thighL',re:/left\s*thigh[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'thighR',re:/right\s*thigh[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'calfL',re:/left\s*calf[:\s]*(\d+\.?\d*)\s*cm/i},
+{key:'calfR',re:/right\s*calf[:\s]*(\d+\.?\d*)\s*cm/i},
+];
+patterns.forEach(p=>{const m=t.match(p.re);if(m)d[p.key]=parseFloat(m[1])});
+// Also try without "cm" suffix and with number right after label
+if(!d.waist){const m=t.match(/waist[:\s]*(\d+\.?\d*)/i);if(m)d.waist=parseFloat(m[1])}
+if(!d.hips){const m=t.match(/hip[s]?[:\s]*(\d+\.?\d*)/i);if(m)d.hips=parseFloat(m[1])}
+if(!d.chest){const m=t.match(/chest[:\s]*(\d+\.?\d*)/i);if(m)d.chest=parseFloat(m[1])}
+if(!d.abdomen){const m=t.match(/abdomen[:\s]*(\d+\.?\d*)/i);if(m)d.abdomen=parseFloat(m[1])}
+if(!d.armL){const m=t.match(/left\s*arm[:\s]*(\d+\.?\d*)/i);if(m)d.armL=parseFloat(m[1])}
+if(!d.armR){const m=t.match(/right\s*arm[:\s]*(\d+\.?\d*)/i);if(m)d.armR=parseFloat(m[1])}
+if(!d.thighL){const m=t.match(/left\s*thigh[:\s]*(\d+\.?\d*)/i);if(m)d.thighL=parseFloat(m[1])}
+if(!d.thighR){const m=t.match(/right\s*thigh[:\s]*(\d+\.?\d*)/i);if(m)d.thighR=parseFloat(m[1])}
+if(!d.calfL){const m=t.match(/left\s*calf[:\s]*(\d+\.?\d*)/i);if(m)d.calfL=parseFloat(m[1])}
+if(!d.calfR){const m=t.match(/right\s*calf[:\s]*(\d+\.?\d*)/i);if(m)d.calfR=parseFloat(m[1])}
+return d}
 
 function qLog(){const w=parseFloat(document.getElementById('qW').value);if(!w||w<20||w>300){toast('⚠️ Enter weight');return}const t=new Date().toISOString().split('T')[0];const x=E.find(e=>e.date===t);if(x)x.weight=w;else{const n={id:Date.now(),date:t,weight:w,bodyFat:null,muscleMass:null,notes:'Quick log'};TAPE.forEach(tp=>n[tp.key]=null);E.push(n)}E.sort((a,b)=>new Date(a.date)-new Date(b.date));sv();document.getElementById('qW').value='';rHome();toast('✅ Logged')}
 async function saveE(){const dt=document.getElementById('iDt').value;if(!dt){toast('⚠️ Pick date');return}const e={id:Date.now(),date:dt,weight:parseFloat(document.getElementById('iW').value)||null,bodyFat:parseFloat(document.getElementById('iBF').value)||null,muscleMass:parseFloat(document.getElementById('iMM').value)||null,notes:document.getElementById('iNo').value||null,photoW:phDW,photoM:phDM};TAPE.forEach(t=>{const el=document.getElementById('i_'+t.key);e[t.key]=el?parseFloat(el.value)||null:null});E.push(e);E.sort((a,b)=>new Date(a.date)-new Date(b.date));sv();cM('mEntry');rHome();toast('✅ Saved')}
