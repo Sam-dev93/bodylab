@@ -364,12 +364,28 @@ function saveSe(){S.height=parseInt(document.getElementById('sH').value)||0;S.ag
 let phDW=null,phDM=null;
 function onPh(inp,type){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const b=e.target.result;if(type==='W')phDW=b;else phDM=b;document.getElementById('ph'+type+'P').innerHTML=`<img src="${b}" style="width:100%;max-height:100px;object-fit:cover;border-radius:10px;margin-top:8px">`;scanPh(f,type)};r.readAsDataURL(f)}
 async function scanPh(file,type){
-const st=document.getElementById('scanSt');st.style.display='block';st.style.background='var(--accent-bg)';st.style.color='var(--accent)';st.textContent=type==='W'?'🔍 Reading scale... (may take a few seconds)':'🔍 Reading measurements... (may take a few seconds)';
+const st=document.getElementById('scanSt');st.style.display='block';st.style.background='var(--accent-bg)';st.style.color='var(--accent)';st.textContent=type==='W'?'🔍 Reading scale...':'🔍 Reading tape...';
 try{
-const result=await Tesseract.recognize(file,'eng',{logger:m=>{if(m.status==='recognizing text'){const pct=Math.round(m.progress*100);st.textContent=type==='W'?`🔍 Reading scale... ${pct}%`:`🔍 Reading measurements... ${pct}%`}}});
-const text=result.data.text;console.log('OCR text:',text);
-if(type==='W'){const d=parseScaleText(text);let filled=0;if(d.weight){document.getElementById('iW').value=d.weight;filled++}if(d.bodyFat){document.getElementById('iBF').value=d.bodyFat;filled++}if(d.muscleMass){document.getElementById('iMM').value=d.muscleMass;filled++}if(filled>0){st.textContent=`✅ ${d.weight?d.weight+'kg':'—'} | Fat ${d.bodyFat?d.bodyFat+'%':'—'} | Muscle ${d.muscleMass?d.muscleMass+'kg':'—'}`;st.style.background='var(--green-bg)';st.style.color='var(--green)'}else{st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
-else{const d=parseTapeText(text);let n=0;Object.entries(d).forEach(([k,v])=>{if(v){const el=document.getElementById('i_'+k);if(el){el.value=v;n++}}});if(n>0){st.textContent=`✅ Filled ${n} measurements`;st.style.background='var(--green-bg)';st.style.color='var(--green)'}else{st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
+const result=await Tesseract.recognize(file,'eng',{logger:m=>{if(m.status==='recognizing text'){const pct=Math.round(m.progress*100);st.textContent=`🔍 Reading... ${pct}%`}}});
+const text=result.data.text;console.log('OCR raw text:',text);
+st.textContent='🧠 Matching values...';
+await new Promise(r=>setTimeout(r,500));
+
+if(type==='W'){
+const d=parseScaleText(text);let filled=0;
+if(d.weight){document.getElementById('iW').value=d.weight;filled++}
+if(d.bodyFat){document.getElementById('iBF').value=d.bodyFat;filled++}
+if(d.muscleMass){document.getElementById('iMM').value=d.muscleMass;filled++}
+if(filled>0){st.innerHTML=`<div style="margin-bottom:4px">✅ Found ${filled} values — <b>please verify:</b></div><div style="font-size:13px">Weight: <b>${d.weight||'—'}kg</b> · Fat: <b>${d.bodyFat||'—'}%</b> · Muscle: <b>${d.muscleMass||'—'}kg</b></div><div style="font-size:10px;margin-top:4px;color:var(--t3)">Check values match your screenshot. Edit any that are wrong.</div>`;st.style.background='var(--green-bg)';st.style.color='var(--green)'}
+else{st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
+
+else{
+const d=parseTapeText(text);let n=0;
+Object.entries(d).forEach(([k,v])=>{if(v){const el=document.getElementById('i_'+k);if(el){el.value=v;n++}}});
+if(n>0){
+const summary=TAPE.filter(t=>d[t.key]).map(t=>`${t.label}: <b>${d[t.key]}</b>`).join(' · ');
+st.innerHTML=`<div style="margin-bottom:4px">✅ Found ${n} measurements — <b>please verify:</b></div><div style="font-size:11px;line-height:1.6">${summary}</div><div style="font-size:10px;margin-top:4px;color:var(--t3)">OCR can misread grids. Check values match your screenshot.</div>`;st.style.background='var(--green-bg)';st.style.color='var(--green)'}
+else{st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
 }catch(e){console.error('OCR error:',e);st.textContent='⚠️ Could not read — enter manually';st.style.background='var(--red-bg)';st.style.color='var(--red)'}}
 
 function parseScaleText(text){
@@ -415,12 +431,12 @@ const map=[
 {key:'hips',labels:['hip','hips','full hip']},
 {key:'abdomen',labels:['abdomen']},
 {key:'chest',labels:['chest']},
-{key:'armL',labels:['left arm']},
-{key:'armR',labels:['right arm']},
-{key:'thighL',labels:['left thigh']},
-{key:'thighR',labels:['right thigh']},
-{key:'calfL',labels:['left calf']},
-{key:'calfR',labels:['right calf']},
+{key:'armL',labels:['left arm','l.arm','l. arm','larm']},
+{key:'armR',labels:['right arm','r.arm','r. arm','rarm']},
+{key:'thighL',labels:['left thigh','l.thigh','l. thigh','lthigh']},
+{key:'thighR',labels:['right thigh','r.thigh','r. thigh','rthigh']},
+{key:'calfL',labels:['left calf','l.calf','l. calf','lcalf']},
+{key:'calfR',labels:['right calf','r.calf','r. calf','rcalf']},
 ];
 
 for(let i=0;i<lines.length;i++){
