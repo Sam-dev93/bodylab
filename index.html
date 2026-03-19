@@ -29,16 +29,17 @@ body{background:var(--bg);color:var(--t1);font-family:'Inter',-apple-system,'Hel
 input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 
 /* === ONE UI HEADER === */
-.hdr{position:sticky;top:0;z-index:100;background:rgba(246,246,246,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:max(env(safe-area-inset-top),10px) 24px 0}
-.hdr-top{display:flex;align-items:center;justify-content:flex-end;padding-bottom:6px;gap:8px}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(246,246,246,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:max(env(safe-area-inset-top),10px) 24px 8px}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:2px}
+.hdr-left{display:flex;flex-direction:column}
 .hdr-btn{width:40px;height:40px;border-radius:50%;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2)}
 .hdr-btn:active{background:var(--card2)}
 .hdr-btn.primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(16,163,127,.25)}
 .hdr-btn.primary:active{opacity:.85}
 /* Big One UI page title */
-.page-title{font-size:32px;font-weight:800;letter-spacing:-.5px;padding:4px 0 14px;line-height:1.15;color:var(--t1)}
+.page-title{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.15;color:var(--t1)}
 .page-title em{font-style:normal;color:var(--accent)}
-.page-sub{font-size:13px;color:var(--t3);font-weight:500;margin-top:-8px;padding-bottom:14px}
+.page-sub{font-size:12px;color:var(--t3);font-weight:500;margin-top:1px}
 
 /* === NAV === */
 .nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--bd);display:flex;padding:2px 4px max(4px,env(safe-area-inset-bottom));z-index:200}
@@ -67,12 +68,13 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 .bmi-val{font-size:32px;font-weight:900;letter-spacing:-1px}
 .bmi-label{font-size:11px;color:var(--t3);font-weight:600;margin-top:2px}
 .bmi-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;display:inline-block;margin-top:4px}
-.bmi-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#10A37F 0%,#1a8c5b 28%,#e5b800 55%,#e67e00 75%,#c62828 100%);position:relative;margin:14px 0 6px}
+.bmi-track{height:8px;border-radius:4px;background:linear-gradient(90deg,#10A37F 0%,#1a8c5b 28%,#e5b800 55%,#e67e00 75%,#c62828 100%);position:relative;margin:8px 0 2px}
 .bmi-dot{position:absolute;top:-6px;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 6px rgba(0,0,0,.15);transform:translateX(-50%);transition:left .6s}
 .bmi-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--t4);font-weight:600}
 
 /* Sparkline */
-.spark{display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:12px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:32px;margin-top:8px}
+.spark:empty{display:none}
 .spark-bar{flex:1;background:var(--accent);border-radius:3px;opacity:.12;min-height:3px;transition:height .3s}
 .spark-bar:last-child{opacity:1}
 
@@ -240,11 +242,12 @@ input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-s
 <!-- HEADER -->
 <div class="hdr">
 <div class="hdr-top">
+<div class="hdr-left"><div class="page-title" id="pageTitle">Body<em>Lab</em></div><div class="page-sub" id="pageSub"></div></div>
+<div style="display:flex;gap:8px;align-items:center">
 <button class="hdr-btn" onclick="oM('mSet')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
 <button class="hdr-btn primary" onclick="oM('mEntry')"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 </div>
-<div class="page-title" id="pageTitle">Body<em>Lab</em></div>
-<div class="page-sub" id="pageSub"></div>
+</div>
 </div>
 
 <!-- HOME -->
